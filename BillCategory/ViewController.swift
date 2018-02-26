@@ -18,7 +18,7 @@ class ViewController: NSViewController {
         let fileData = read(filename: "compteTest")
         let fileDataString = String(data: fileData as Data, encoding: .utf8)
         
-        let storeAndCategories = self.loadStatments(fileData: fileDataString)
+        let storeAndCategories = self.parseStatments(fileData: fileDataString)
         let stores : Array <Store> = storeAndCategories.0
         var categories : Dictionary = storeAndCategories.1
         
@@ -26,6 +26,9 @@ class ViewController: NSViewController {
         let categorylessStore = stores.filter {$0.category == nil}
         print("nombre de magasins sans categorie : \(categorylessStore.count)")
 
+        
+        
+        
         // Handle category less stores.
         for store in stores {
             print(store)
@@ -71,7 +74,7 @@ class ViewController: NSViewController {
         return data!;
     }
     
-    func loadStatments(fileData:String?) -> (Array <Store>, Dictionary<String, Category>)  {
+    func parseStatments(fileData:String?) -> (Array <Store>, Dictionary<String, Category>)  {
         
         let billStatements = fileData?.components(separatedBy:"\n")
         print("nombre de factures : \(billStatements?.count ?? 0)")
@@ -80,27 +83,25 @@ class ViewController: NSViewController {
         var categories : Dictionary = [String:Category]()
         
         for billStatment in billStatements! {
-            let billParts = billStatment.split(separator: ",")
-            if billParts.count > 0 {
+            
+            let billStatamentReader = BillStatementReader(billStatementData: billStatment)
+            if billStatamentReader.isValidStatement() {
                 
-                let bill : Bill = Bill(date:String(billParts[0]), amount: Float(billParts[2])!)
-                let storeName = self.storeName(billStatement: billStatment)
-                
-                if let existingStore = stores.first(where: {$0.name == storeName}) {
-                    existingStore.bills.append(bill)
+                if let existingStore = stores.first(where: {$0.name == billStatamentReader.storeName}) {
+                    existingStore.bills.append(billStatamentReader.bill!)
                 } else {
-                    let store : Store = Store(name:storeName)
-                    store.bills.append(bill)
+                    let store : Store = Store(name:billStatamentReader.storeName!)
+                    store.bills.append(billStatamentReader.bill!)
                     
                     // Category thing.
-                    if self.hasACategory(billStatement:billStatment) {
+                    //TODO: mettre hasACategory dans BillStatement
+                    if let categoryName = billStatamentReader.categoryName() {
                         
-                        let categoryName = String(billParts[3])
                         if let existingCategory : Category = categories[categoryName] {
                             store.category = existingCategory
-                            existingCategory.addTags(fromStoreName: storeName)
+                            existingCategory.addTags(fromStoreName: billStatamentReader.storeName!)
                         } else {
-                            let category : Category = Category(name:categoryName, storeName:storeName)
+                            let category : Category = Category(name:categoryName, storeName:billStatamentReader.storeName!)
                             categories[categoryName] = category
                             store.category = category
                         }
@@ -109,32 +110,15 @@ class ViewController: NSViewController {
                     
                     stores.append(store)
                 }
+                
             }
+            
         }
 
         return (stores, categories)
         
     }
-    
-    func hasACategory(billStatement:String) -> Bool {
-        let billParts = billStatement.split(separator: ",")
-        return billParts.count > 3
-    }
-    
-    func storeName(billStatement:String) -> String {
-        let billParts = billStatement.split(separator: ",")
-        let longStoreName = String(billParts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-        var shortStoreName = longStoreName
         
-        let words = longStoreName.components(separatedBy: " ")
-        if words.count > 3 {
-            let firstWords = words[0...2] // keep the 3 first words
-            shortStoreName = firstWords.joined(separator: " ")
-        }
-        
-        return shortStoreName
-    }
-    
     func printCategories(_ categories:Dictionary<String, Category>) -> Void {
         var index: Int = 0
         categories.forEach() {

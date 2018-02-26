@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CDECD09F1FBCE77200AF2C0B /* BillStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDECD09E1FBCE77200AF2C0B /* BillStatement.swift */; };
+		CD8B583E2044ABF0006CB5F1 /* BillStatementReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8B583D2044ABF0006CB5F1 /* BillStatementReader.swift */; };
+		CDECD09F1FBCE77200AF2C0B /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDECD09E1FBCE77200AF2C0B /* Model.swift */; };
 		CDF208351FBB94FF004BC4EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF208341FBB94FF004BC4EF /* AppDelegate.swift */; };
 		CDF208371FBB94FF004BC4EF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF208361FBB94FF004BC4EF /* ViewController.swift */; };
 		CDF208391FBB94FF004BC4EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CDF208381FBB94FF004BC4EF /* Assets.xcassets */; };
@@ -16,7 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		CDECD09E1FBCE77200AF2C0B /* BillStatement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillStatement.swift; sourceTree = "<group>"; };
+		CD8B583D2044ABF0006CB5F1 /* BillStatementReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillStatementReader.swift; sourceTree = "<group>"; };
+		CDECD09E1FBCE77200AF2C0B /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		CDF208311FBB94FF004BC4EF /* BillCategory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BillCategory.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDF208341FBB94FF004BC4EF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CDF208361FBB94FF004BC4EF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -59,7 +61,8 @@
 			children = (
 				CDF208341FBB94FF004BC4EF /* AppDelegate.swift */,
 				CDF208361FBB94FF004BC4EF /* ViewController.swift */,
-				CDECD09E1FBCE77200AF2C0B /* BillStatement.swift */,
+				CDECD09E1FBCE77200AF2C0B /* Model.swift */,
+				CD8B583D2044ABF0006CB5F1 /* BillStatementReader.swift */,
 				CDF208381FBB94FF004BC4EF /* Assets.xcassets */,
 				CDF2083A1FBB94FF004BC4EF /* Main.storyboard */,
 				CDF2083D1FBB94FF004BC4EF /* Info.plist */,
@@ -141,8 +144,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDECD09F1FBCE77200AF2C0B /* BillStatement.swift in Sources */,
+				CDECD09F1FBCE77200AF2C0B /* Model.swift in Sources */,
 				CDF208371FBB94FF004BC4EF /* ViewController.swift in Sources */,
+				CD8B583E2044ABF0006CB5F1 /* BillStatementReader.swift in Sources */,
 				CDF208351FBB94FF004BC4EF /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
