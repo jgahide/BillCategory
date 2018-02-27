@@ -44,11 +44,7 @@ class BillStatementReader {
     func isValidStatement() -> Bool {
         return self.billParts.count >= 2
     }
-    
-//    func hasACategory() -> Bool {
-//        return self.billParts.count > 3
-//    }
-    
+        
     func categoryName() -> String? {
         if self.billParts.count > 3 {
             return String(self.billParts[3])
