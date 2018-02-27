@@ -20,7 +20,7 @@ class Store : CustomStringConvertible {
     
     var description: String {
         if let cat = self.category {
-            return "Store: {\n  name: '\(self.name)'\n  \(cat)\n  bills: \(self.bills)\n}"
+            return "Store: {\n  name: '\(self.name)'\n  catégory: \(cat)\n  bills: \(self.bills)\n}"
         } else {
             return "Store: {\n  name: '\(self.name)'\n  bills: \(self.bills)\n}"
         }
@@ -33,7 +33,7 @@ struct Bill : CustomStringConvertible {
     let amount : Float
 
     var description: String {
-        return "Bill date : \(self.date) amount : \(self.amount) "
+        return "Bill date : \(self.date) amount : \(self.amount) \n"
     }
     
 }
