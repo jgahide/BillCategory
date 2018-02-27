@@ -10,6 +10,9 @@ import Cocoa
 
 class ViewController: NSViewController {
 
+    var categories : Dictionary<String, Category> = [:]
+    var stores : Array <Store> = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -18,19 +21,14 @@ class ViewController: NSViewController {
         let fileData = read(filename: "compteTest")
         let fileDataString = String(data: fileData as Data, encoding: .utf8)
         
-        let storeAndCategories = self.parseStatments(fileData: fileDataString)
-        let stores : Array <Store> = storeAndCategories.0
-        var categories : Dictionary = storeAndCategories.1
+        self.parseStatments(fileData: fileDataString)
         
         print("nombre de magasins : \(stores.count)")
         let categorylessStore = stores.filter {$0.category == nil}
-        print("nombre de magasins sans categorie : \(categorylessStore.count)")
-
+        print("nombre de magasins non catégorisé : \(categorylessStore.count)")
         
-        
-        
-        // Handle category less stores.
-        for store in stores {
+        print("On va catégoriser les magasins sans catégorie")
+        for store in categorylessStore {
             print(store)
             
             // find  category for the user
@@ -74,51 +72,50 @@ class ViewController: NSViewController {
         return data!;
     }
     
-    func parseStatments(fileData:String?) -> (Array <Store>, Dictionary<String, Category>)  {
-        
+    func parseStatments(fileData:String?) -> Void  {
         let billStatements = fileData?.components(separatedBy:"\n")
         print("nombre de factures : \(billStatements?.count ?? 0)")
-        
-        var stores : Array <Store> = Array()
-        var categories : Dictionary = [String:Category]()
         
         for billStatment in billStatements! {
             
             let billStatamentReader = BillStatementReader(billStatementData: billStatment)
             if billStatamentReader.isValidStatement() {
                 
-                if let existingStore = stores.first(where: {$0.name == billStatamentReader.storeName}) {
+                if let existingStore = self.stores.first(where: {$0.name == billStatamentReader.storeName}) {
                     existingStore.bills.append(billStatamentReader.bill!)
                 } else {
                     let store : Store = Store(name:billStatamentReader.storeName!)
                     store.bills.append(billStatamentReader.bill!)
                     
-                    // Category thing.
-                    //TODO: mettre hasACategory dans BillStatement
-                    if let categoryName = billStatamentReader.categoryName() {
-                        
-                        if let existingCategory : Category = categories[categoryName] {
-                            store.category = existingCategory
-                            existingCategory.addTags(fromStoreName: billStatamentReader.storeName!)
-                        } else {
-                            let category : Category = Category(name:categoryName, storeName:billStatamentReader.storeName!)
-                            categories[categoryName] = category
-                            store.category = category
-                        }
-                        
+                    if let category = self.readCategory(from:billStatamentReader) {
+                        store.category = category
                     }
                     
-                    stores.append(store)
+                    self.stores.append(store)
                 }
                 
             }
             
         }
-
-        return (stores, categories)
-        
     }
+    
+    func readCategory(from reader:BillStatementReader) -> Category? {
+        var result : Category? = nil
         
+        if let categoryName = reader.categoryName() {
+            
+            if let existingCategory = categories[categoryName] {
+                existingCategory.addTags(fromStoreName: reader.storeName!)
+                result = existingCategory
+            } else {
+                result = Category(name:categoryName, storeName:reader.storeName!)
+                self.categories[categoryName] = result
+            }
+        }
+        
+        return result
+    }
+    
     func printCategories(_ categories:Dictionary<String, Category>) -> Void {
         var index: Int = 0
         categories.forEach() {
