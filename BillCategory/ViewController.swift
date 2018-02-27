@@ -29,30 +29,23 @@ class ViewController: NSViewController {
         
         print("On va catégoriser les magasins sans catégorie")
         for store in categorylessStores {
-            print("Categorisation du magasin : ", store.name)
-            
-            // Faire une fonction/classe qui pose une question de choix dans une liste
-            // et qui retourne la réponse.
             
             let possibleCategories = self.findCandidateCategories(forStore: store)
-            print("Categories disponible pour ce magasin : \n")
-            printCategories(possibleCategories)
-            var answer:Int = readUserAnswer()
+            let title = "Categorisation du magasin : " + store.name
+            let keys = Array(possibleCategories.keys)
+            let chooseFromCandidateCategories : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
             
-            if 0 ..< possibleCategories.count ~= answer {
-                print("choix en dans les possibiltées")
+            let answer:Int = chooseFromCandidateCategories.ask()
+            if chooseFromCandidateCategories.isAnswerIsOther() {
+                let title = "Choisir une categorie existante : "
+                let keys = Array(self.categories.keys)
+                let chooseCategory : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
+                let answer:Int = chooseCategory.ask()
+                
             } else {
-                // ask the user to choose a category
-                print("choose a catogory from the list : ")
-                printCategories(categories)
-                answer = readUserAnswer()
-                if 0 ..< possibleCategories.count ~= answer {
-                    
-                } else {
-                    // create a new Category.
-                }
+                print("Categorie \(keys[answer]) assigné au magasin \(store.name)")
+                store.category = possibleCategories[keys[answer]]
             }
-            
             
         }
         
@@ -119,27 +112,8 @@ class ViewController: NSViewController {
         return result
     }
     
-    func printCategories(_ categories:Dictionary<String, Category>) -> Void {
-        var index: Int = 0
-        categories.forEach() {
-            print("\(index) \($0.key) ")
-            index = index + 1
-        }
-        print("\(index) OTHER ")
-    }
-    
     func printLineSeparator() -> Void {
         print("--------------------------------\n")
-    }
-    
-    func readUserAnswer() -> Int {
-        print("Veuillez choisir une réponse : ")
-        let standardInput = FileHandle.standardInput
-        let input = standardInput.availableData
-        let inputString = String(data: input as Data, encoding: .utf8)?.trimmingCharacters(in: .newlines)
-        print("=>\(inputString ?? "")")
-        
-        return Int(inputString!)!
     }
     
     func findCandidateCategories(forStore store:Store) -> Dictionary<String, Category> {
