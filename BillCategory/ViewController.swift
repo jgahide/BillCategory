@@ -16,35 +16,37 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-        
+        self.printLineSeparator()
         let fileData = read(filename: "compteTest")
         let fileDataString = String(data: fileData as Data, encoding: .utf8)
         
         self.parseStatments(fileData: fileDataString)
         
         print("nombre de magasins : \(stores.count)")
-        let categorylessStore = stores.filter {$0.category == nil}
-        print("nombre de magasins non catégorisé : \(categorylessStore.count)")
+        let categorylessStores = stores.filter {$0.category == nil}
+        print("nombre de magasins non catégorisé : \(categorylessStores.count)")
+        self.printLineSeparator()
         
         print("On va catégoriser les magasins sans catégorie")
-        for store in categorylessStore {
-            print(store)
+        for store in categorylessStores {
+            print("Categorisation du magasin : ", store.name)
             
-            // find  category for the user
-            let storeWords = store.name.components(separatedBy: " ")
-            let matchingCategories = categories.filter{ $1.tags.intersection(storeWords).count > 0 }
-            printCategories(matchingCategories)
+            // Faire une fonction/classe qui pose une question de choix dans une liste
+            // et qui retourne la réponse.
+            
+            let possibleCategories = self.findCandidateCategories(forStore: store)
+            print("Categories disponible pour ce magasin : \n")
+            printCategories(possibleCategories)
             var answer:Int = readUserAnswer()
             
-            if 0 ..< matchingCategories.count ~= answer {
-                
+            if 0 ..< possibleCategories.count ~= answer {
+                print("choix en dans les possibiltées")
             } else {
                 // ask the user to choose a category
                 print("choose a catogory from the list : ")
                 printCategories(categories)
                 answer = readUserAnswer()
-                if 0 ..< matchingCategories.count ~= answer {
+                if 0 ..< possibleCategories.count ~= answer {
                     
                 } else {
                     // create a new Category.
@@ -67,6 +69,7 @@ class ViewController: NSViewController {
     
     func read(filename: String) -> NSData {
         let filePath = Bundle.main.path(forResource: filename, ofType: "csv")
+        print("Lecture du fichier ", filePath!)
         let data     = NSData(contentsOfFile:filePath!)
         
         return data!;
@@ -125,14 +128,23 @@ class ViewController: NSViewController {
         print("\(index) OTHER ")
     }
     
+    func printLineSeparator() -> Void {
+        print("--------------------------------\n")
+    }
+    
     func readUserAnswer() -> Int {
-        print("Please choose an answer:")
+        print("Veuillez choisir une réponse : ")
         let standardInput = FileHandle.standardInput
         let input = standardInput.availableData
         let inputString = String(data: input as Data, encoding: .utf8)?.trimmingCharacters(in: .newlines)
         print("=>\(inputString ?? "")")
         
         return Int(inputString!)!
+    }
+    
+    func findCandidateCategories(forStore store:Store) -> Dictionary<String, Category> {
+        let storeWords = store.name.components(separatedBy: " ")
+        return categories.filter{ $1.tags.intersection(storeWords).count > 0 }
     }
     
 }
