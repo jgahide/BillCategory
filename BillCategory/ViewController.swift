@@ -31,7 +31,7 @@ class ViewController: NSViewController {
         for store in categorylessStores {
             
             let possibleCategories = self.findCandidateCategories(forStore: store)
-            let title = "Categorisation du magasin : " + store.name
+            let title = "* Categorisation du magasin : " + store.name
             let keys = Array(possibleCategories.keys)
             let chooseFromCandidateCategories : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
             
@@ -42,13 +42,26 @@ class ViewController: NSViewController {
                 let chooseCategory : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
                 let answer:Int = chooseCategory.ask()
                 
+                if chooseCategory.isAnswerIsOther() {
+                    let title = "Veuillez entrer un nom pour une nouvelle catégorie : "
+                    let enterNewCategory : SentenceQuestion = SentenceQuestion(withQuestionTitle: title)
+                    let categoryName = enterNewCategory.ask()
+                    let category : Category = Category(name:categoryName, storeName:store.name)
+                    store.category = category
+                    self.categories[categoryName] = category
+                    print("Nouvelle Catégorie \(categoryName) créée")
+                } else {
+                    print("Categorie \(keys[answer]) assignée au magasin \(store.name)")
+                    store.category = possibleCategories[keys[answer]]
+                }
+                
             } else {
-                print("Categorie \(keys[answer]) assigné au magasin \(store.name)")
+                print("Categorie \(keys[answer]) assignée au magasin \(store.name)")
                 store.category = possibleCategories[keys[answer]]
             }
-            
         }
         
+        // Sauvegarder le fichier
         
         
         

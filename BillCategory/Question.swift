@@ -8,11 +8,32 @@
 
 import Foundation
 
-class ChoiceQuestion {
+protocol Question {
+    associatedtype AnswerType
+    var title  :String {get set}
+    var answer :AnswerType {get set}
     
-    let title   :String
+    func ask() -> AnswerType
+}
+
+extension Question {
+    
+    func readUserAnswer() -> String {
+        let standardInput = FileHandle.standardInput
+        let input = standardInput.availableData
+        let inputString = String(data: input as Data, encoding: .utf8)?.trimmingCharacters(in: .newlines)
+        print("=>\(inputString ?? "")")
+        
+        return inputString!
+    }
+}
+
+class ChoiceQuestion : Question {
+    typealias AnswerType = Int
+    
+    var title: String
+    var answer: Int
     let choices :Array<String>
-    var answer  :Int
     
     init(withQuestionTitle title:String, andChoiceList choices:Array<String>) {
         self.title = title
@@ -24,7 +45,8 @@ class ChoiceQuestion {
         print("\(self.title) \n")
         printChoicesList()
         repeat {
-            self.answer = readUserAnswer()
+            print("Veuillez choisir une réponse : ")
+            self.answer = Int(readUserAnswer())!
         } while (!(0 ..< self.choices.count+1 ~= self.answer))
         return self.answer
     }
@@ -38,18 +60,26 @@ class ChoiceQuestion {
         print("\(index) OTHER ")
     }
     
-    func readUserAnswer() -> Int {
-        print("Veuillez choisir une réponse : ")
-        let standardInput = FileHandle.standardInput
-        let input = standardInput.availableData
-        let inputString = String(data: input as Data, encoding: .utf8)?.trimmingCharacters(in: .newlines)
-        print("=>\(inputString ?? "")")
-        
-        return Int(inputString!)!
-    }
-    
     func isAnswerIsOther() -> Bool {
         return self.answer == self.choices.count
     }
     
+}
+
+class SentenceQuestion : Question {
+    typealias AnswerType = String
+    
+    var title: String
+    var answer: String
+    
+    init(withQuestionTitle title:String) {
+        self.title = title
+        self.answer = ""
+    }
+
+    func ask() -> String {
+        print("\(self.title) \n")
+        self.answer = readUserAnswer()
+        return self.answer
+    }
 }
