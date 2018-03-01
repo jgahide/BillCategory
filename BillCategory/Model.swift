@@ -11,11 +11,13 @@ import Foundation
 // pour pourvoir surcharger la description on implemente CustomStringConvertible
 class Store : CustomStringConvertible {
     var name : String = "" // Beneficiaire
+    var fullName : String = ""
     var bills : Array<Bill> = []
     var category : Category?
     
-    init(name: String) {
+    init(name: String, fullName : String) {
         self.name = name
+        self.fullName = fullName
     }
     
     var description: String {
@@ -35,8 +37,10 @@ struct Bill : CustomStringConvertible {
     var description: String {
         return "Bill date : \(self.date) amount : \(self.amount) \n"
     }
-    
 }
+
+
+//TODO: faire une bill statement qui a un numéro de ligne a la methode swift
 
 class Category : CustomStringConvertible {
     var name : String = "" // restaurant , epicerie ...

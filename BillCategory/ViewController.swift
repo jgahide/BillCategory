@@ -31,7 +31,7 @@ class ViewController: NSViewController {
         for store in categorylessStores {
             
             let possibleCategories = self.findCandidateCategories(forStore: store)
-            let title = "* Categorisation du magasin : " + store.name
+            let title = "* Categorisation du magasin : " + store.name + "\n nom complet = " + store.fullName
             let keys = Array(possibleCategories.keys)
             let chooseFromCandidateCategories : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
             
@@ -93,7 +93,7 @@ class ViewController: NSViewController {
                 if let existingStore = self.stores.first(where: {$0.name == billStatamentReader.storeName}) {
                     existingStore.bills.append(billStatamentReader.bill!)
                 } else {
-                    let store : Store = Store(name:billStatamentReader.storeName!)
+                    let store : Store = Store(name:billStatamentReader.storeName!, fullName:billStatamentReader.fullStoreName!)
                     store.bills.append(billStatamentReader.bill!)
                     
                     if let category = self.readCategory(from:billStatamentReader) {

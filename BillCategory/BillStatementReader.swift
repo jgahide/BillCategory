@@ -13,6 +13,7 @@ class BillStatementReader {
     
     var bill : Bill?
     var storeName : String?
+    var fullStoreName : String?
     
     init(billStatementData: String) {
         self.billParts = billStatementData.split(separator: ",")
@@ -20,9 +21,11 @@ class BillStatementReader {
         if self.isValidStatement() {
             self.bill = Bill(date:String(self.billParts[0]), amount: Float(self.billParts[2])!)
             self.storeName = self.readStoreName()
+            self.fullStoreName = String(self.billParts[1])
         } else {
             self.bill = nil
             self.storeName = nil
+            self.fullStoreName = nil
         }
 
     }
