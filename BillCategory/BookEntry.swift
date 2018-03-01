@@ -8,30 +8,23 @@
 
 import Foundation
 
-class BillStatementReader {
+class BookEntry {
     private let billParts : Array<Substring>
-    
-    var bill : Bill?
-    var storeName : String?
-    var fullStoreName : String?
+
+    public var bill : Bill? = nil
+    public var store : Store? = nil
     
     init(billStatementData: String) {
         self.billParts = billStatementData.split(separator: ",")
-        
-        if self.isValidStatement() {
-            self.bill = Bill(date:String(self.billParts[0]), amount: Float(self.billParts[2])!)
-            self.storeName = self.readStoreName()
-            self.fullStoreName = String(self.billParts[1])
-        } else {
-            self.bill = nil
-            self.storeName = nil
-            self.fullStoreName = nil
-        }
 
+        if self.isValidStatement() {
+            self.store = Store(name:self.readStoreShortname(), fullName:String(self.billParts[1]))
+            self.bill = Bill(date:String(self.billParts[0]), amount: Float(self.billParts[2])!, store: nil )
+            self.bill?.store = self.store
+        }
     }
     
-    
-     private func readStoreName() -> String {
+     private func readStoreShortname() -> String {
         let longStoreName = String(self.billParts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
         var shortStoreName = longStoreName
         
@@ -54,7 +47,6 @@ class BillStatementReader {
         }
         return nil
     }
-
 }
 
 

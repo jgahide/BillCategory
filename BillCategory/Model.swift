@@ -12,7 +12,7 @@ import Foundation
 class Store : CustomStringConvertible {
     var name : String = "" // Beneficiaire
     var fullName : String = ""
-    var bills : Array<Bill> = []
+    //var bills : Array<Bill> = []
     var category : Category?
     
     init(name: String, fullName : String) {
@@ -22,9 +22,9 @@ class Store : CustomStringConvertible {
     
     var description: String {
         if let cat = self.category {
-            return "Store: {\n  name: '\(self.name)'\n  catégory: \(cat)\n  bills: \(self.bills)\n}"
+            return "Store: {\n  name: '\(self.name)'\n  catégory: \(cat)\n}"
         } else {
-            return "Store: {\n  name: '\(self.name)'\n  bills: \(self.bills)\n}"
+            return "Store: {\n  name: '\(self.name)'\n}"
         }
     }
 
@@ -33,14 +33,16 @@ class Store : CustomStringConvertible {
 struct Bill : CustomStringConvertible {
     let date : String
     let amount : Float
+    var store : Store?
 
     var description: String {
-        return "Bill date : \(self.date) amount : \(self.amount) \n"
+        if let store = self.store {
+            return "Bill date : \(self.date) amount : \(self.amount) store : \(store.name)\n"
+        } else {
+            return "Bill date : \(self.date) amount : \(self.amount) \n"
+        }
     }
 }
-
-
-//TODO: faire une bill statement qui a un numéro de ligne a la methode swift
 
 class Category : CustomStringConvertible {
     var name : String = "" // restaurant , epicerie ...

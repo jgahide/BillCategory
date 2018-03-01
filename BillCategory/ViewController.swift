@@ -9,28 +9,29 @@
 import Cocoa
 
 class ViewController: NSViewController {
-
-    var categories : Dictionary<String, Category> = [:]
-    var stores : Array <Store> = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.printLineSeparator()
-        let fileData = read(filename: "compteTest")
-        let fileDataString = String(data: fileData as Data, encoding: .utf8)
+        let title = "Veuillez donner le fichier de factures à analyser : "
+        let chooseInputFile : SentenceQuestion = SentenceQuestion(withQuestionTitle: title)
         
-        self.parseStatments(fileData: fileDataString)
+
         
-        print("nombre de magasins : \(stores.count)")
-        let categorylessStores = stores.filter {$0.category == nil}
+        self.printLineSeparator()
+        let book:Book = Book(withBookName: "compteTest")
+        book.read()
+        
+        print("nombre de magasins : \(book.stores.count)")
+        let categorylessStores = book.stores.filter {$0.category == nil}
         print("nombre de magasins non catégorisé : \(categorylessStores.count)")
         self.printLineSeparator()
         
         print("On va catégoriser les magasins sans catégorie")
         for store in categorylessStores {
             
-            let possibleCategories = self.findCandidateCategories(forStore: store)
+            let possibleCategories = book.findCandidateCategories(forStore: store)
             let title = "* Categorisation du magasin : " + store.name + "\n nom complet = " + store.fullName
             let keys = Array(possibleCategories.keys)
             let chooseFromCandidateCategories : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
@@ -38,7 +39,7 @@ class ViewController: NSViewController {
             let answer:Int = chooseFromCandidateCategories.ask()
             if chooseFromCandidateCategories.isAnswerIsOther() {
                 let title = "Choisir une categorie existante : "
-                let keys = Array(self.categories.keys)
+                let keys = Array(book.categories.keys)
                 let chooseCategory : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
                 let answer:Int = chooseCategory.ask()
                 
@@ -48,7 +49,7 @@ class ViewController: NSViewController {
                     let categoryName = enterNewCategory.ask()
                     let category : Category = Category(name:categoryName, storeName:store.name)
                     store.category = category
-                    self.categories[categoryName] = category
+                    book.categories[categoryName] = category
                     print("Nouvelle Catégorie \(categoryName) créée")
                 } else {
                     print("Categorie \(keys[answer]) assignée au magasin \(store.name)")
@@ -63,75 +64,21 @@ class ViewController: NSViewController {
         
         // Sauvegarder le fichier
         
-        
-        
     }
 
+    func printLineSeparator() -> Void {
+        print("--------------------------------\n")
+    }
+    
     override var representedObject: Any? {
         didSet {
         // Update the view, if already loaded.
         }
     }
     
-    func read(filename: String) -> NSData {
-        let filePath = Bundle.main.path(forResource: filename, ofType: "csv")
-        print("Lecture du fichier ", filePath!)
-        let data     = NSData(contentsOfFile:filePath!)
-        
-        return data!;
-    }
+
     
-    func parseStatments(fileData:String?) -> Void  {
-        let billStatements = fileData?.components(separatedBy:"\n")
-        print("nombre de factures : \(billStatements?.count ?? 0)")
-        
-        for billStatment in billStatements! {
-            
-            let billStatamentReader = BillStatementReader(billStatementData: billStatment)
-            if billStatamentReader.isValidStatement() {
-                
-                if let existingStore = self.stores.first(where: {$0.name == billStatamentReader.storeName}) {
-                    existingStore.bills.append(billStatamentReader.bill!)
-                } else {
-                    let store : Store = Store(name:billStatamentReader.storeName!, fullName:billStatamentReader.fullStoreName!)
-                    store.bills.append(billStatamentReader.bill!)
-                    
-                    if let category = self.readCategory(from:billStatamentReader) {
-                        store.category = category
-                    }
-                    
-                    self.stores.append(store)
-                }
-                
-            }
-            
-        }
-    }
     
-    func readCategory(from reader:BillStatementReader) -> Category? {
-        var result : Category? = nil
-        
-        if let categoryName = reader.categoryName() {
-            
-            if let existingCategory = categories[categoryName] {
-                existingCategory.addTags(fromStoreName: reader.storeName!)
-                result = existingCategory
-            } else {
-                result = Category(name:categoryName, storeName:reader.storeName!)
-                self.categories[categoryName] = result
-            }
-        }
-        
-        return result
-    }
     
-    func printLineSeparator() -> Void {
-        print("--------------------------------\n")
-    }
-    
-    func findCandidateCategories(forStore store:Store) -> Dictionary<String, Category> {
-        let storeWords = store.name.components(separatedBy: " ")
-        return categories.filter{ $1.tags.intersection(storeWords).count > 0 }
-    }
     
 }
