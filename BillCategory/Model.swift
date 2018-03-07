@@ -34,13 +34,24 @@ struct Bill : CustomStringConvertible {
     let date : String
     let amount : Float
     var store : Store?
-
+    
     var description: String {
         if let store = self.store {
             return "Bill date : \(self.date) amount : \(self.amount) store : \(store.name)\n"
         } else {
             return "Bill date : \(self.date) amount : \(self.amount) \n"
         }
+    }
+}
+
+extension Bill {
+    public func outputString() -> String {
+        if let category = self.store!.category {
+            return "\(self.date), \(self.store!.fullName), \(self.amount), \(category.name)"
+        } else {
+            return "\(self.date), \(self.store!.fullName), \(self.amount),"
+        }
+        
     }
 }
 

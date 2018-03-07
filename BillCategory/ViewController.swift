@@ -13,11 +13,9 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.printLineSeparator()
-        let title = "Veuillez donner le fichier de factures à analyser : "
-        let chooseInputFile : SentenceQuestion = SentenceQuestion(withQuestionTitle: title)
-        
-
+//        self.printLineSeparator()
+//        let title = "Veuillez donner le fichier de factures à analyser : "
+//        let chooseInputFile : SentenceQuestion = SentenceQuestion(withQuestionTitle: title)
         
         self.printLineSeparator()
         let book:Book = Book(withBookName: "compteTest")
@@ -37,7 +35,10 @@ class ViewController: NSViewController {
             let chooseFromCandidateCategories : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
             
             let answer:Int = chooseFromCandidateCategories.ask()
-            if chooseFromCandidateCategories.isAnswerIsOther() {
+            if chooseFromCandidateCategories.isAnswerIsAbort() {
+                book.writeFile()
+                exit(0)
+            } else if chooseFromCandidateCategories.isAnswerIsOther() {
                 let title = "Choisir une categorie existante : "
                 let keys = Array(book.categories.keys)
                 let chooseCategory : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
@@ -55,7 +56,6 @@ class ViewController: NSViewController {
                     print("Categorie \(keys[answer]) assignée au magasin \(store.name)")
                     store.category = possibleCategories[keys[answer]]
                 }
-                
             } else {
                 print("Categorie \(keys[answer]) assignée au magasin \(store.name)")
                 store.category = possibleCategories[keys[answer]]
@@ -63,6 +63,7 @@ class ViewController: NSViewController {
         }
         
         // Sauvegarder le fichier
+        book.writeFile()
         
     }
 

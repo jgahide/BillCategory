@@ -16,10 +16,13 @@ class BookEntry {
     
     init(billStatementData: String) {
         self.billParts = billStatementData.split(separator: ",")
-
+        
         if self.isValidStatement() {
+            let date:String = self.billParts[0].trimmingCharacters(in:.whitespacesAndNewlines)
+            let amount:String = self.billParts[2].trimmingCharacters(in:.whitespacesAndNewlines)
+            
             self.store = Store(name:self.readStoreShortname(), fullName:String(self.billParts[1]))
-            self.bill = Bill(date:String(self.billParts[0]), amount: Float(self.billParts[2])!, store: nil )
+            self.bill = Bill(date:date, amount: Float(amount)!, store: nil )
             self.bill?.store = self.store
         }
     }

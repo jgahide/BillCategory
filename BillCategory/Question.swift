@@ -47,7 +47,7 @@ class ChoiceQuestion : Question {
         repeat {
             print("Veuillez choisir une réponse : ")
             self.answer = Int(readUserAnswer())!
-        } while (!(0 ..< self.choices.count+1 ~= self.answer))
+        } while (!(0 ..< self.choices.count+2 ~= self.answer))
         return self.answer
     }
     
@@ -58,11 +58,18 @@ class ChoiceQuestion : Question {
             index = index + 1
         }
         print("\(index) OTHER ")
+        index+=1
+        print("\(index) Abort ")
     }
     
     func isAnswerIsOther() -> Bool {
         return self.answer == self.choices.count
     }
+
+    func isAnswerIsAbort() -> Bool {
+        return self.answer == self.choices.count+1
+    }
+
     
 }
 

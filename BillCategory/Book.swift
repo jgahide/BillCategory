@@ -19,26 +19,28 @@ class Book {
     }
     
     public func read() -> Void {
-        let fileData = self.readfile()
-        let fileDataString = String(data: fileData as Data, encoding: .utf8)
+        let fileDataString = self.loadFile()
+//        let fileData = self.readfile()
+//        let fileDataString = String(data: fileData as Data, encoding: .utf8)
         self.parseBook(fileData: fileDataString)
     }
     
-    private func readfile() -> NSData {
-//        let DocumentDirURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-//        let fileURL = DocumentDirURL.appendingPathComponent(self.filename).appendingPathExtension("csv")
-//        print("FilePath: \(fileURL.path)")
-//
-//        var readString = "" // Used to store the file contents
-//        do {
-//            // Read the file contents
-//            readString = try String(contentsOf: fileURL)
-//        } catch let error as NSError {
-//            print("Failed reading from URL: \(fileURL), Error: " + error.localizedDescription)
-//        }
-//        print("File Text: \(readString)")
-//        return readString
+    private func loadFile() -> String {
+        let DocumentDirURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let fileURL = DocumentDirURL.appendingPathComponent(self.filename).appendingPathExtension("csv")
+        print("Lecture du fichier \(fileURL.path)")
         
+        var readString = "" // Used to store the file contents
+        do {
+            // Read the file contents
+            readString = try String(contentsOf: fileURL)
+        } catch let error as NSError {
+            print("Failed reading from URL: \(fileURL), Error: " + error.localizedDescription)
+        }
+        return readString
+    }
+    
+    private func readfile() -> NSData {
         let filePath = Bundle.main.path(forResource: self.filename, ofType: "csv")
         print("Lecture du fichier ", filePath!)
         return NSData(contentsOfFile:filePath!)!
@@ -82,12 +84,23 @@ class Book {
         return result
     }
 
-    public func write() -> Void {
-        let filePath = Bundle.main.path(forResource: self.filename, ofType: "csv")
-        
+    public func writeFile() -> Void {
+        let DocumentDirURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let fileURL = DocumentDirURL.appendingPathComponent(self.filename).appendingPathExtension("csv")
+        print("Ecriture du fichier \(fileURL.path)")
+
         //"test".write(toFile: filePath, atomically: true, encoding: .utf8)
+        var output:String = ""
         for bill in self.bills {
-            
+            output += bill.outputString() + "\n"
+        }
+        
+//        print(output)
+        
+        do{
+            try output.write(to: fileURL, atomically: false, encoding: .utf8)
+        } catch {
+            print("Erreur d'ecriture sur le fichier : \(fileURL)")
         }
     }
 
