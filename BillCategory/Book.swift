@@ -54,7 +54,9 @@ class Book {
             let bookEntry = BookEntry(billStatementData: entry)
             if bookEntry.isValidStatement() {
                 
-                if self.stores.first(where: {$0.name == bookEntry.store!.name}) == nil {
+                if let existingStore = self.stores.first(where: {$0.name == bookEntry.store!.name}) {
+                    bookEntry.bill!.store = existingStore
+                } else {
                     let store : Store = bookEntry.store!
                     if let category = self.readCategory(from:bookEntry) {
                         store.category = category
