@@ -54,7 +54,7 @@ class ViewController: NSViewController {
                     print("Nouvelle Catégorie \(categoryName) créée")
                 } else {
                     print("Categorie \(keys[answer]) assignée au magasin \(store.name)")
-                    store.category = possibleCategories[keys[answer]]
+                    store.category = book.categories[keys[answer]]
                 }
             } else {
                 print("Categorie \(keys[answer]) assignée au magasin \(store.name)")
