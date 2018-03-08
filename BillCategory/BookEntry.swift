@@ -46,7 +46,7 @@ class BookEntry {
         
     func categoryName() -> String? {
         if self.billParts.count > 3 {
-            return String(self.billParts[3])
+            return String(self.billParts[3]).trimmingCharacters(in:.whitespacesAndNewlines)
         }
         return nil
     }

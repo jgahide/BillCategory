@@ -16,8 +16,8 @@ class Store : CustomStringConvertible {
     var category : Category?
     
     init(name: String, fullName : String) {
-        self.name = name
-        self.fullName = fullName
+        self.name = name.trimmingCharacters(in:.whitespacesAndNewlines)
+        self.fullName = fullName.trimmingCharacters(in:.whitespacesAndNewlines)
     }
     
     var description: String {
