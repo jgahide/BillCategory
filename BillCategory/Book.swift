@@ -38,18 +38,12 @@ class Book {
         return readString
     }
     
-    private func readfile() -> NSData {
-        let filePath = Bundle.main.path(forResource: self.filename, ofType: "csv")
-        print("Lecture du fichier ", filePath!)
-        return NSData(contentsOfFile:filePath!)!
-    }
-    
     private func parseBook(fileData:String?) -> Void  {
         let entries = fileData?.components(separatedBy:"\n")
         print("nombre de factures : \(entries?.count ?? 0)")
         
         for entry in entries! {
-            let bookEntry = GreatBookEntry(billStatementData: entry)
+            let bookEntry:BookEntry = self.bookEntryForType(entry)
             if bookEntry.isValidStatement() {
                 
                 if let existingStore = self.stores.first(where: {$0.name == bookEntry.bill!.store!.name}) {
@@ -64,6 +58,14 @@ class Book {
                 
                 self.bills.append(bookEntry.bill!)
             }
+        }
+    }
+    
+    private func bookEntryForType(_ entry: String) -> BookEntry {
+        if self.filename == "mastercard" {
+            return MastercardBookEntry(billStatementData: entry)
+        } else {
+            return GreatBookEntry(billStatementData: entry)
         }
     }
     

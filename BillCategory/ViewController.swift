@@ -18,6 +18,11 @@ class ViewController: NSViewController {
 //        let chooseInputFile : SentenceQuestion = SentenceQuestion(withQuestionTitle: title)
         
         self.printLineSeparator()
+        print("Recherche d'un livre de compte Mastercard à importer ...")
+        let mastercardBook:Book = Book(withBookName: "mastercard")
+        mastercardBook.read()
+        
+        self.printLineSeparator()
         let book:Book = Book(withBookName: "compteTest")
         book.read()
         

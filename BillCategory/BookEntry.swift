@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol BookEntry : class {
+protocol BookEntry : class , CustomStringConvertible {
     var bill : Bill? { get set }
     
     func isValidStatement() -> Bool
@@ -27,6 +27,10 @@ extension BookEntry {
             let store = Store(name:self.readStoreShortname(), fullName:self.readFullName())
             self.bill?.store = store
         }
+    }
+    
+    var description: String {
+        return "" + (self.bill?.description)!
     }
 }
 
@@ -83,5 +87,51 @@ class GreatBookEntry : BookEntry {
     }
 }
 
+class MastercardBookEntry : BookEntry {
+    // Protocol var implementation
+    internal var bill : Bill? = nil
+    
+    // local properties
+    let billParts : Array<Substring>
+    
+    
+    init(billStatementData: String) {
+        self.billParts = billStatementData.split(separator: ",")
+        self.parseEntry()
+    }
+    
+    func isValidStatement() -> Bool {
+        return true
+    }
+    
+    func readStoreShortname() -> String {
+        let words = self.billParts[2].components(separatedBy: " ")
+        var shortStoreName = String(self.billParts[2])
+        if words.count > 2 {
+            let firstWords = words[0...1] // keep the 2 first words
+            shortStoreName = firstWords.joined(separator: " ")
+        }
+        
+        return shortStoreName
+    }
+    
+    func readFullName() -> String {
+        return String(self.billParts[2])
+    }
+    
+    func readDate() -> String {
+        return String(self.billParts[0])
+    }
+    
+    func readAmount() -> Float {
+        var amount:String = self.billParts[3].trimmingCharacters(in:.whitespacesAndNewlines)
+        amount = amount.replacingOccurrences(of: "\"", with: "", options: NSString.CompareOptions.literal, range: nil)
+        return Float(amount)! * -1
+    }
+    
+    func categoryName() -> String? {
+        return nil
+    }
 
+}
 
