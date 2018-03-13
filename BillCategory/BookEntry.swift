@@ -8,26 +8,47 @@
 
 import Foundation
 
-class BookEntry {
-    private let billParts : Array<Substring>
+protocol BookEntry : class {
+    var bill : Bill? { get set }
+    
+    func isValidStatement() -> Bool
+    func readStoreShortname() -> String
+    func readFullName() -> String
+    func readDate() -> String
+    func readAmount() -> Float
+    
+    func categoryName() -> String?
+}
 
-    public var bill : Bill? = nil
-    public var store : Store? = nil
+extension BookEntry {
+    func parseEntry() -> Void {
+        if self.isValidStatement() {
+            self.bill = Bill(date:self.readDate(), amount: self.readAmount(), store: nil )
+            let store = Store(name:self.readStoreShortname(), fullName:self.readFullName())
+            self.bill?.store = store
+        }
+    }
+}
+
+class GreatBookEntry : BookEntry {
+    // Protocol var implementation
+    internal var bill : Bill? = nil
+    
+    // local properties
+    let billParts : Array<Substring>
+
     
     init(billStatementData: String) {
         self.billParts = billStatementData.split(separator: ",")
-        
-        if self.isValidStatement() {
-            let date:String = self.billParts[0].trimmingCharacters(in:.whitespacesAndNewlines)
-            let amount:String = self.billParts[2].trimmingCharacters(in:.whitespacesAndNewlines)
-            
-            self.store = Store(name:self.readStoreShortname(), fullName:String(self.billParts[1]))
-            self.bill = Bill(date:date, amount: Float(amount)!, store: nil )
-            self.bill?.store = self.store
-        }
+        self.parseEntry()
     }
     
-     private func readStoreShortname() -> String {
+    
+    func isValidStatement() -> Bool {
+        return self.billParts.count >= 2
+    }
+    
+    internal func readStoreShortname() -> String {
         let longStoreName = String(self.billParts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
         var shortStoreName = longStoreName
         
@@ -40,10 +61,20 @@ class BookEntry {
         return shortStoreName
     }
     
-    func isValidStatement() -> Bool {
-        return self.billParts.count >= 2
+    internal func readFullName() -> String {
+        return String(self.billParts[1])
     }
-        
+    
+    internal func readDate() -> String {
+        return self.billParts[0].trimmingCharacters(in:.whitespacesAndNewlines)
+    }
+    
+    internal func readAmount() -> Float {
+        let amount:String = self.billParts[2].trimmingCharacters(in:.whitespacesAndNewlines)
+        return Float(amount)!
+    }
+    
+    
     func categoryName() -> String? {
         if self.billParts.count > 3 {
             return String(self.billParts[3]).trimmingCharacters(in:.whitespacesAndNewlines)

@@ -20,8 +20,6 @@ class Book {
     
     public func read() -> Void {
         let fileDataString = self.loadFile()
-//        let fileData = self.readfile()
-//        let fileDataString = String(data: fileData as Data, encoding: .utf8)
         self.parseBook(fileData: fileDataString)
     }
     
@@ -51,13 +49,13 @@ class Book {
         print("nombre de factures : \(entries?.count ?? 0)")
         
         for entry in entries! {
-            let bookEntry = BookEntry(billStatementData: entry)
+            let bookEntry = GreatBookEntry(billStatementData: entry)
             if bookEntry.isValidStatement() {
                 
-                if let existingStore = self.stores.first(where: {$0.name == bookEntry.store!.name}) {
+                if let existingStore = self.stores.first(where: {$0.name == bookEntry.bill!.store!.name}) {
                     bookEntry.bill!.store = existingStore
                 } else {
-                    let store : Store = bookEntry.store!
+                    let store : Store = bookEntry.bill!.store!
                     if let category = self.readCategory(from:bookEntry) {
                         store.category = category
                     }
@@ -75,10 +73,10 @@ class Book {
         if let categoryName = entry.categoryName() {
             
             if let existingCategory = self.categories[categoryName] {
-                existingCategory.addTags(fromStoreName: entry.store!.name)
+                existingCategory.addTags(fromStoreName: entry.bill!.store!.name)
                 result = existingCategory
             } else {
-                result = Category(name:categoryName, storeName:entry.store!.name)
+                result = Category(name:categoryName, storeName:entry.bill!.store!.name)
                 self.categories[categoryName] = result
             }
         }
