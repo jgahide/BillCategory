@@ -13,8 +13,8 @@ protocol BookEntry : class , CustomStringConvertible {
     
     func isValidStatement() -> Bool
     func readStoreShortname() -> String
-    func readFullName() -> String
-    func readDate() -> String
+    func readStoreFullName() -> String
+    func readTransactionDate() -> String
     func readAmount() -> Float
     
     func categoryName() -> String?
@@ -23,10 +23,23 @@ protocol BookEntry : class , CustomStringConvertible {
 extension BookEntry {
     func parseEntry() -> Void {
         if self.isValidStatement() {
-            self.bill = Bill(date:self.readDate(), amount: self.readAmount(), store: nil )
-            let store = Store(name:self.readStoreShortname(), fullName:self.readFullName())
+            self.bill = Bill(date:self.readTransactionDate(), amount: self.readAmount(), store: nil )
+            let store = Store(name:self.readStoreShortname(), fullName:self.readStoreFullName())
             self.bill?.store = store
         }
+    }
+    
+    static func interpretDoubleQuote(inStatementData data:String) -> String {
+        let regex = try! NSRegularExpression(pattern:"\"(.*)\"")
+        if let match = regex.firstMatch(
+            in: data, range:NSMakeRange(0,data.utf16.count)) {
+            var interpretedBillStatementData = data
+            let amount = (data as NSString).substring(with: match.range(at:1))
+            let amountCorrected = amount.replacingOccurrences(of: ",", with: ".")
+            interpretedBillStatementData = interpretedBillStatementData.replacingOccurrences(of: "\""+amount+"\"", with: amountCorrected)
+            return interpretedBillStatementData
+        }
+        return data
     }
     
     var description: String {
@@ -65,11 +78,11 @@ class GreatBookEntry : BookEntry {
         return shortStoreName
     }
     
-    internal func readFullName() -> String {
+    internal func readStoreFullName() -> String {
         return String(self.billParts[1])
     }
     
-    internal func readDate() -> String {
+    internal func readTransactionDate() -> String {
         return self.billParts[0].trimmingCharacters(in:.whitespacesAndNewlines)
     }
     
@@ -96,36 +109,43 @@ class MastercardBookEntry : BookEntry {
     
     
     init(billStatementData: String) {
-        self.billParts = billStatementData.split(separator: ",")
+        let interpretedData = MastercardBookEntry.interpretDoubleQuote(inStatementData: billStatementData)
+        self.billParts = interpretedData.split(separator: ",")
         self.parseEntry()
     }
     
     func isValidStatement() -> Bool {
-        return true
+        return
+            self.billParts.count == 4 &&
+            self.readStoreFullName().range(of:"PAYMENT - THANK YOU" ) == nil
     }
     
     func readStoreShortname() -> String {
-        let words = self.billParts[2].components(separatedBy: " ")
-        var shortStoreName = String(self.billParts[2])
+        let fullname = self.readStoreFullName()
+        let words = fullname.components(separatedBy: " ")
+        var shortStoreName = self.readStoreFullName()
         if words.count > 2 {
-            let firstWords = words[0...1] // keep the 2 first words
+            let firstWords = words[0...2] // keep the 3 first words
             shortStoreName = firstWords.joined(separator: " ")
         }
         
         return shortStoreName
     }
     
-    func readFullName() -> String {
-        return String(self.billParts[2])
+    func readStoreFullName() -> String {
+        // Mastercard bills description are made of column "  "
+        // The name is contained in the first column.
+        // ex : TOASTEUR LAURIER       MONTREAL      QC  CAN
+        let columns = self.billParts[2].components(separatedBy: "  ")
+        return columns[0].trimmingCharacters(in:.whitespacesAndNewlines)
     }
     
-    func readDate() -> String {
-        return String(self.billParts[0])
+    func readTransactionDate() -> String {
+        return String(self.billParts[0]).trimmingCharacters(in:.whitespacesAndNewlines)
     }
     
     func readAmount() -> Float {
         var amount:String = self.billParts[3].trimmingCharacters(in:.whitespacesAndNewlines)
-        amount = amount.replacingOccurrences(of: "\"", with: "", options: NSString.CompareOptions.literal, range: nil)
         return Float(amount)! * -1
     }
     
