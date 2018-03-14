@@ -23,12 +23,22 @@ class ViewController: NSViewController {
         mastercardBook.read()
         
         self.printLineSeparator()
+        print("Chargement du grand livre de compte ...")
         let book:Book = Book(withBookName: "compteTest")
         book.read()
-        
+
         print("nombre de magasins : \(book.stores.count)")
+        print("nombre de magasins non catégorisé : \(book.stores.filter {$0.category == nil}.count)")
+        self.printLineSeparator()
+
+        
+        self.printLineSeparator()
+        print("Importation du livre de compte Mastercard ...")
+        book.importBook(mastercardBook)
+
+        print("nombre de magasins après import : \(book.stores.count)")
         let categorylessStores = book.stores.filter {$0.category == nil}
-        print("nombre de magasins non catégorisé : \(categorylessStores.count)")
+        print("nombre de magasins non catégorisé après import : \(categorylessStores.count)")
         self.printLineSeparator()
         
         print("On va catégoriser les magasins sans catégorie")

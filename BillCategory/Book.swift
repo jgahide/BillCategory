@@ -110,6 +110,24 @@ class Book {
         let storeWords = store.name.components(separatedBy: " ")
         return self.categories.filter{ $1.tags.intersection(storeWords).count > 0 }
     }
+    
+    public func importBook(_ aBook : Book) -> Void {
+        //TODO: Implement me
+        // Append bill to existing store,
+        // Or append the store.
+        
+        for var bill in aBook.bills {
+            if let existingStore = self.stores.first(where: {$0.name == bill.store!.name}) {
+                bill.store = existingStore
+                self.bills.append(bill)
+            } else {
+                self.stores.append(bill.store!)
+                self.bills.append(bill)
+            }
+        }
+        
+    }
+    
 }
 
 
