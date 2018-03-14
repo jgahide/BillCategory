@@ -155,3 +155,55 @@ class MastercardBookEntry : BookEntry {
 
 }
 
+class ChequeAccountBookEntry : BookEntry {
+    var bill: Bill?
+    
+    // local properties
+    let billParts : Array<Substring>
+    
+    // ex : 12 Mars 2018,ACHT PMT DIRECT SUPER DEPANNEUR BON AI #0001482014 APOF23837,"-3,75"
+    
+    init(billStatementData: String) {
+        let interpretedData = ChequeAccountBookEntry.interpretDoubleQuote(inStatementData: billStatementData)
+        self.billParts = interpretedData.split(separator: ",")
+        self.parseEntry()
+    }
+    
+    func isValidStatement() -> Bool {
+        return
+            self.billParts.count == 3 &&
+            self.readStoreFullName().range(of:"HSBC MASTERCARD" ) == nil // On omet les remboursement a la carte Mastercard
+    }
+    
+    func readStoreShortname() -> String {
+        var storeShortName = self.billParts[1]
+        if let range = storeShortName.range(of: "#") {
+            storeShortName = storeShortName[...range.lowerBound]
+            storeShortName.removeLast()
+        }
+        if let range = storeShortName.range(of: "ACHT PMT DIRECT") {
+            storeShortName = storeShortName[range.upperBound...]
+        }
+        return storeShortName.trimmingCharacters(in:.whitespacesAndNewlines)
+    }
+    
+    func readStoreFullName() -> String {
+        return self.readStoreShortname()
+    }
+    
+    func readTransactionDate() -> String {
+        return String(self.billParts[0])
+    }
+    
+    func readAmount() -> Float {
+        var amount:String = self.billParts[2].trimmingCharacters(in:.whitespacesAndNewlines)
+        amount = amount.replacingOccurrences(of:" ", with:"")
+        return Float(amount)! * -1
+    }
+    
+    func categoryName() -> String? {
+        return nil
+    }
+    
+    
+}

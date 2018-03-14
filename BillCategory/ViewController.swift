@@ -12,15 +12,16 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-//        self.printLineSeparator()
-//        let title = "Veuillez donner le fichier de factures à analyser : "
-//        let chooseInputFile : SentenceQuestion = SentenceQuestion(withQuestionTitle: title)
         
         self.printLineSeparator()
         print("Recherche d'un livre de compte Mastercard à importer ...")
         let mastercardBook:Book = Book(withBookName: "mastercard")
         mastercardBook.read()
+
+        self.printLineSeparator()
+        print("Recherche d'un livre de compte chèque à importer ...")
+        let compteCourant:Book = Book(withBookName: "CompteCourant")
+        compteCourant.read()
         
         self.printLineSeparator()
         print("Chargement du grand livre de compte ...")
@@ -35,6 +36,7 @@ class ViewController: NSViewController {
         self.printLineSeparator()
         print("Importation du livre de compte Mastercard ...")
         book.importBook(mastercardBook)
+        book.importBook(compteCourant)
 
         print("nombre de magasins après import : \(book.stores.count)")
         let categorylessStores = book.stores.filter {$0.category == nil}

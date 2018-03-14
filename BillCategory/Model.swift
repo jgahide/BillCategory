@@ -39,7 +39,7 @@ struct Bill : CustomStringConvertible {
         if let store = self.store {
             return "Bill date : \(self.date) amount : \(self.amount) store : \(store.name)\n"
         } else {
-            return "Bill date : \(self.date) amount : \(self.amount) \n"
+            return "Bill date : \(self.date) amount : \(String(format: "%.2f", self.amount)) \n"
         }
     }
 }

@@ -64,6 +64,8 @@ class Book {
     private func bookEntryForType(_ entry: String) -> BookEntry {
         if self.filename == "mastercard" {
             return MastercardBookEntry(billStatementData: entry)
+        } else if self.filename == "CompteCourant" {
+            return ChequeAccountBookEntry(billStatementData: entry)
         } else {
             return GreatBookEntry(billStatementData: entry)
         }
