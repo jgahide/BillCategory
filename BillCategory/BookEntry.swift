@@ -12,8 +12,7 @@ protocol BookEntry : class , CustomStringConvertible {
     var bill : Bill? { get set }
     
     func isValidStatement() -> Bool
-    func readStoreShortname() -> String
-    func readStoreFullName() -> String
+    func readStoreName() -> String
     func readTransactionDate() -> String
     func readAmount() -> Float
     
@@ -24,7 +23,7 @@ extension BookEntry {
     func parseEntry() -> Void {
         if self.isValidStatement() {
             self.bill = Bill(date:self.readTransactionDate(), amount: self.readAmount(), store: nil )
-            let store = Store(name:self.readStoreShortname(), fullName:self.readStoreFullName())
+            let store = Store(name:self.readStoreName())
             self.bill?.store = store
         }
     }
@@ -65,21 +64,21 @@ class GreatBookEntry : BookEntry {
         return self.billParts.count >= 2
     }
     
-    internal func readStoreShortname() -> String {
-        let longStoreName = String(self.billParts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-        var shortStoreName = longStoreName
-        
-        let words = longStoreName.components(separatedBy: " ")
-        if words.count > 3 {
-            let firstWords = words[0...2] // keep the 3 first words
-            shortStoreName = firstWords.joined(separator: " ")
-        }
-        
-        return shortStoreName
-    }
+//    internal func readStoreShortname() -> String {
+//        let longStoreName = String(self.billParts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
+//        var shortStoreName = longStoreName
+//
+//        let words = longStoreName.components(separatedBy: " ")
+//        if words.count > 3 {
+//            let firstWords = words[0...2] // keep the 3 first words
+//            shortStoreName = firstWords.joined(separator: " ")
+//        }
+//
+//        return shortStoreName
+//    }
     
-    internal func readStoreFullName() -> String {
-        return String(self.billParts[1])
+    internal func readStoreName() -> String {
+        return String(self.billParts[1]).trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     internal func readTransactionDate() -> String {
@@ -117,22 +116,22 @@ class MastercardBookEntry : BookEntry {
     func isValidStatement() -> Bool {
         return
             self.billParts.count == 4 &&
-            self.readStoreFullName().range(of:"PAYMENT - THANK YOU" ) == nil
+            self.readStoreName().range(of:"PAYMENT - THANK YOU" ) == nil
     }
     
-    func readStoreShortname() -> String {
-        let fullname = self.readStoreFullName()
-        let words = fullname.components(separatedBy: " ")
-        var shortStoreName = self.readStoreFullName()
-        if words.count > 2 {
-            let firstWords = words[0...2] // keep the 3 first words
-            shortStoreName = firstWords.joined(separator: " ")
-        }
-        
-        return shortStoreName
-    }
+//    func readStoreShortname() -> String {
+//        let fullname = self.readStoreFullName()
+//        let words = fullname.components(separatedBy: " ")
+//        var shortStoreName = self.readStoreFullName()
+//        if words.count > 2 {
+//            let firstWords = words[0...2] // keep the 3 first words
+//            shortStoreName = firstWords.joined(separator: " ")
+//        }
+//
+//        return shortStoreName
+//    }
     
-    func readStoreFullName() -> String {
+    func readStoreName() -> String {
         // Mastercard bills description are made of column "  "
         // The name is contained in the first column.
         // ex : TOASTEUR LAURIER       MONTREAL      QC  CAN
@@ -172,10 +171,10 @@ class ChequeAccountBookEntry : BookEntry {
     func isValidStatement() -> Bool {
         return
             self.billParts.count == 3 &&
-            self.readStoreFullName().range(of:"HSBC MASTERCARD" ) == nil // On omet les remboursement a la carte Mastercard
+            self.readStoreName().range(of:"HSBC MASTERCARD" ) == nil // On omet les remboursement a la carte Mastercard
     }
     
-    func readStoreShortname() -> String {
+    func readStoreName() -> String {
         var storeShortName : String = String(self.billParts[1])
         if let range = storeShortName.range(of: "#") {
             storeShortName = storeShortName.substring(to: range.lowerBound)
@@ -186,9 +185,9 @@ class ChequeAccountBookEntry : BookEntry {
         return storeShortName.trimmingCharacters(in:.whitespacesAndNewlines)
     }
     
-    func readStoreFullName() -> String {
-        return self.readStoreShortname()
-    }
+//    func readStoreFullName() -> String {
+//        return self.readStoreShortname()
+//    }
     
     func readTransactionDate() -> String {
         return String(self.billParts[0])

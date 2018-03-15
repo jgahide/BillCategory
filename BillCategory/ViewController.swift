@@ -47,7 +47,7 @@ class ViewController: NSViewController {
         for store in categorylessStores {
             
             let possibleCategories = book.findCandidateCategories(forStore: store)
-            let title = "* Categorisation du magasin : " + store.name + "\n nom complet = " + store.fullName
+            let title = "* Categorisation du magasin : " + store.name + "\n"
             let keys = Array(possibleCategories.keys)
             let chooseFromCandidateCategories : ChoiceQuestion = ChoiceQuestion(withQuestionTitle:title , andChoiceList: keys)
             

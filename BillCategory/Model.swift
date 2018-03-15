@@ -11,13 +11,10 @@ import Foundation
 // pour pourvoir surcharger la description on implemente CustomStringConvertible
 class Store : CustomStringConvertible {
     var name : String = "" // Beneficiaire
-    var fullName : String = ""
-    //var bills : Array<Bill> = []
     var category : Category?
     
-    init(name: String, fullName : String) {
+    init(name: String) {
         self.name = name.trimmingCharacters(in:.whitespacesAndNewlines)
-        self.fullName = fullName.trimmingCharacters(in:.whitespacesAndNewlines)
     }
     
     var description: String {
@@ -27,7 +24,10 @@ class Store : CustomStringConvertible {
             return "Store: {\n  name: '\(self.name)'\n}"
         }
     }
-
+    
+    static func ==(lhs: Store, rhs: Store) -> Bool {
+        return lhs.name == rhs.name
+    }
 }
 
 struct Bill : CustomStringConvertible {
@@ -42,14 +42,19 @@ struct Bill : CustomStringConvertible {
             return "Bill date : \(self.date) amount : \(String(format: "%.2f", self.amount)) \n"
         }
     }
+    
+    static func ==(lhs: Bill, rhs: Bill) -> Bool {
+        return lhs.date == rhs.date && lhs.amount == rhs.amount && lhs.store! == rhs.store!
+    }
+
 }
 
 extension Bill {
     public func outputString() -> String {
         if let category = self.store!.category {
-            return "\(self.date), \(self.store!.fullName), \(self.amount), \(category.name)"
+            return "\(self.date), \(self.store!.name), \(self.amount), \(category.name)"
         } else {
-            return "\(self.date), \(self.store!.fullName), \(self.amount),"
+            return "\(self.date), \(self.store!.name), \(self.amount),"
         }
         
     }
