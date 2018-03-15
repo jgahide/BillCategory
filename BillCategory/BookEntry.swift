@@ -88,7 +88,7 @@ class GreatBookEntry : BookEntry {
     
     internal func readAmount() -> Float {
         let amount:String = self.billParts[2].trimmingCharacters(in:.whitespacesAndNewlines)
-        return Float(amount)!
+        return abs(Float(amount)!) * -1
     }
     
     
@@ -145,8 +145,8 @@ class MastercardBookEntry : BookEntry {
     }
     
     func readAmount() -> Float {
-        var amount:String = self.billParts[3].trimmingCharacters(in:.whitespacesAndNewlines)
-        return Float(amount)! * -1
+        let amount:String = self.billParts[3].trimmingCharacters(in:.whitespacesAndNewlines)
+        return abs(Float(amount)!) * -1
     }
     
     func categoryName() -> String? {
@@ -197,7 +197,7 @@ class ChequeAccountBookEntry : BookEntry {
     func readAmount() -> Float {
         var amount:String = self.billParts[2].trimmingCharacters(in:.whitespacesAndNewlines)
         amount = amount.replacingOccurrences(of:" ", with:"")
-        return Float(amount)! * -1
+        return abs(Float(amount)!) * -1
     }
     
     func categoryName() -> String? {
