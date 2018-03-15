@@ -176,13 +176,12 @@ class ChequeAccountBookEntry : BookEntry {
     }
     
     func readStoreShortname() -> String {
-        var storeShortName = self.billParts[1]
+        var storeShortName : String = String(self.billParts[1])
         if let range = storeShortName.range(of: "#") {
-            storeShortName = storeShortName[...range.lowerBound]
-            storeShortName.removeLast()
+            storeShortName = storeShortName.substring(to: range.lowerBound)
         }
         if let range = storeShortName.range(of: "ACHT PMT DIRECT") {
-            storeShortName = storeShortName[range.upperBound...]
+            storeShortName = storeShortName.substring(from: range.upperBound)
         }
         return storeShortName.trimmingCharacters(in:.whitespacesAndNewlines)
     }
